@@ -1,0 +1,100 @@
+# =========================
+# Logs
+# =========================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =========================
+# Node / Vite
+# =========================
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+tmp_utf8_test.txt
+
+# =========================
+# Build artifacts
+# =========================
+build/
+builds/
+*.apk
+*.aab
+*.ap_
+*.aar
+
+# =========================
+# Editor / OS
+# =========================
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+
+# =========================
+# Android / Gradle
+# =========================
+android/.gradle/
+android/build/
+android/local.properties
+android/captures/
+android/.idea/
+android/**/*.iml
+
+# Android app build outputs
+android/app/build/
+android/**/build/
+
+# External native build
+android/.cxx/
+android/**/.cxx/
+android/.externalNativeBuild/
+android/**/.externalNativeBuild/
+
+# Gradle / Java generated
+android/**/out/
+android/**/bin/
+android/**/gen/
+android/**/*.class
+android/**/*.dex
+android/**/*.hprof
+
+# Capacitor generated / copied assets
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+android/app/src/main/res/xml/config.xml
+
+# Capacitor / Cordova generated plugin build output
+android/capacitor-cordova-android-plugins/build/
+
+# =========================
+# Signing keys / secrets
+# =========================
+*.jks
+*.keystore
+google-services.json
