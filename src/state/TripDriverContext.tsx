@@ -71,6 +71,7 @@ type TripDriverContextValue = {
   activeCars: Car[]
   imagesForCar: (carId: string) => CarImage[]
   reviewsForCar: (carId: string) => CarReview[]
+  bookingHasReview: (bookingId: string) => boolean
   averageRatingForCar: (carId: string) => number
   bookingsForCurrentUser: () => Booking[]
   ownerVisibleBookings: () => Booking[]
@@ -502,6 +503,10 @@ export function TripDriverProvider({ children }: PropsWithChildren) {
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
+  }
+
+  function bookingHasReview(bookingId: string) {
+    return reviews.some((review) => review.bookingId === bookingId)
   }
 
   function averageRatingForCar(carId: string) {
@@ -1168,6 +1173,7 @@ export function TripDriverProvider({ children }: PropsWithChildren) {
     activeCars,
     imagesForCar,
     reviewsForCar,
+    bookingHasReview,
     averageRatingForCar,
     bookingsForCurrentUser,
     ownerVisibleBookings,

@@ -845,9 +845,8 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
       this.dedupeCars([...activeCars, ...extraCars]),
       carImages,
     )
-    const carIds = cars.map((item) => item.id)
-    const reviews = await this.fetchReviews(carIds)
     const bookingIds = bookings.map((item) => item.id)
+    const reviews = await this.fetchReviewsByBookingIds(bookingIds)
     const payments = await this.fetchPayments(bookingIds)
     const history = await this.fetchHistory(bookingIds)
     const notifications = await this.fetchNotifications(profile.id)
@@ -1219,15 +1218,15 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
     return (data ?? []).map((row) => this.bookingFromRow(row))
   }
 
-  private async fetchReviews(carIds: string[]): Promise<CarReview[]> {
-    const uniqueIds = [...new Set(carIds.filter(Boolean))]
+  private async fetchReviewsByBookingIds(bookingIds: string[]): Promise<CarReview[]> {
+    const uniqueIds = [...new Set(bookingIds.filter(Boolean))]
     if (!uniqueIds.length) {
       return []
     }
     const { data, error } = await supabase
       .from('car_reviews')
       .select('*')
-      .in('car_id', uniqueIds)
+      .in('booking_id', uniqueIds)
       .order('created_at', { ascending: false })
     if (error) {
       throw new TripDriverRepositoryException(error.message)

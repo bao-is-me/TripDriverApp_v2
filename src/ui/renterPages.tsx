@@ -547,7 +547,7 @@ export function BookingDetailPage() {
   const bookingId = booking.id
   const canReview =
     booking.status === BookingStatus.completed &&
-    !state.reviews.some((review) => review.bookingId === bookingId)
+    !state.bookingHasReview(bookingId)
   const hasReturnRequest = state.bookingHasReturnRequest(booking.id)
 
   function back() {

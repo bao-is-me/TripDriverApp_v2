@@ -120,7 +120,7 @@ export function RoleScaffold(props: {
           )}
           <div className="page-heading">
             <h1>{props.title}</h1>
-            <p>{props.subtitle}</p>
+            {props.subtitle ? <p>{props.subtitle}</p> : null}
           </div>
           {props.headerAction ? (
             <div className="page-header-action">{props.headerAction}</div>
