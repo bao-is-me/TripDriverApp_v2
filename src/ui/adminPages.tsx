@@ -137,7 +137,12 @@ export function AdminRecentBookingsPage() {
                 booking={booking}
                 car={car}
                 statusLabel={state.bookingStatusLabel(booking.status)}
-                ownerLabel={`${renter.fullName} -> ${owner.fullName}`}
+                ownerLabel={
+                  <span className="booking-party-info">
+                    <span>Người thuê: {renter.fullName}</span>
+                    <span>Chủ xe: {owner.fullName}</span>
+                  </span>
+                }
               />
             )
           })}

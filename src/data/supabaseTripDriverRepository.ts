@@ -56,7 +56,9 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
       password: input.password.trim(),
     })
     if (error) {
-      throw new TripDriverRepositoryException(error.message)
+      throw new TripDriverRepositoryException(
+        this.normalizeDatabaseError(error.message),
+      )
     }
     const {
       data: { user },
@@ -82,13 +84,15 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
     password: string
     role: UserRole
   }): Promise<RegisterResult> {
+    const normalizedFullName = input.fullName.trim()
+    const normalizedPhone = this.normalizeOptionalText(input.phone)
     const { data, error } = await supabase.auth.signUp({
       email: input.email.trim(),
       password: input.password.trim(),
       options: {
         data: {
-          full_name: input.fullName.trim(),
-          phone: input.phone.trim(),
+          full_name: normalizedFullName,
+          phone: normalizedPhone,
           app_role: UserRoleDb[input.role],
         },
       },
@@ -110,11 +114,19 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
       }
     }
 
-    const profile = await this.upsertProfileForUser(user, {
-      fullName: input.fullName.trim(),
-      phone: input.phone.trim(),
-      role: input.role,
-    })
+    let profile: Profile | null = null
+    try {
+      profile = await this.upsertProfileForUser(user, {
+        fullName: normalizedFullName,
+        phone: normalizedPhone,
+        role: input.role,
+      })
+    } catch (profileError) {
+      if (data.session) {
+        await supabase.auth.signOut().catch(() => undefined)
+      }
+      throw profileError
+    }
     if (!profile) {
       throw new TripDriverRepositoryException(
         'Không thể tạo hồ sơ người dùng sau khi đăng ký.',
@@ -739,12 +751,13 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
     city: string
     address: string
   }): Promise<Profile> {
+    const normalizedPhone = this.normalizeOptionalText(input.phone)
     await this.assert(
       supabase
         .from('profiles')
         .update({
           full_name: input.fullName.trim(),
-          phone: input.phone.trim(),
+          phone: normalizedPhone,
           city: input.city.trim(),
           address: input.address.trim(),
           updated_at: new Date().toISOString(),
@@ -1018,7 +1031,7 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
     },
     overrides?: {
       fullName?: string
-      phone?: string
+      phone?: string | null
       role?: UserRole
     },
   ): Promise<Profile | null> {
@@ -1027,10 +1040,9 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
       overrides?.fullName ??
       String(metadata.full_name ?? metadata.name ?? '')
     ).trim()
-    const phone = (
-      overrides?.phone ??
-      String(metadata.phone ?? '')
-    ).trim()
+    const phone = this.normalizeOptionalText(
+      overrides?.phone ?? String(metadata.phone ?? ''),
+    )
     const role =
       overrides?.role ??
       userRoleFromDb(String(metadata.app_role ?? metadata.role ?? 'RENTER'))
@@ -1597,6 +1609,17 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
   private normalizeDatabaseError(message: string): string {
     const normalized = message.trim()
 
+    if (normalized.toLowerCase() === 'invalid login credentials') {
+      return 'Email hoặc mật khẩu không hợp lệ.'
+    }
+
+    if (
+      normalized.toLowerCase().includes('duplicate key value') &&
+      normalized.toLowerCase().includes('phone')
+    ) {
+      return 'Số điện thoại này đã được sử dụng bởi tài khoản khác.'
+    }
+
     if (
       normalized.includes('stack depth limit exceeded') ||
       normalized.includes('infinite recursion')
@@ -1641,5 +1664,10 @@ export class SupabaseTripDriverRepository implements TripDriverRepository {
       normalized.includes('permission denied') ||
       normalized.includes('violates row-level security')
     )
+  }
+
+  private normalizeOptionalText(value: string | null | undefined): string | null {
+    const normalized = String(value ?? '').trim()
+    return normalized ? normalized : null
   }
 }

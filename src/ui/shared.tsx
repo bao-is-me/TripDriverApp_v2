@@ -169,7 +169,7 @@ export function StatusBadge(props: { label: string; color: string }) {
   )
 }
 
-export function KeyValueRow(props: { label: string; value: string }) {
+export function KeyValueRow(props: { label: string; value: ReactNode }) {
   return (
     <div className="key-value-row">
       <span>{props.label}</span>
@@ -219,7 +219,7 @@ export function BookingCard(props: {
   booking: Booking
   car: Car
   statusLabel: string
-  ownerLabel: string
+  ownerLabel: ReactNode
   onClick?: () => void
 }) {
   return (

@@ -6,6 +6,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * {
@@ -64,7 +66,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
 }
 
 .auth-screen {
@@ -124,6 +126,14 @@ p {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.auth-copyright {
+  margin-top: 6px;
+  text-align: center;
+  color: #7b8794;
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .card {
@@ -205,7 +215,7 @@ textarea {
   max-width: 520px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 14px 12px calc(76px + env(safe-area-inset-bottom, 0px));
+  padding: calc(14px + var(--safe-top)) 12px calc(76px + var(--safe-bottom));
 }
 
 .page-header {
@@ -478,6 +488,17 @@ textarea {
 
 .booking-card .key-value-row strong {
   font-size: 0.96rem;
+}
+
+.booking-party-info {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.booking-party-info span {
+  display: block;
 }
 
 .price-text {
@@ -1043,7 +1064,7 @@ textarea {
 
 .floating-action {
   position: sticky;
-  bottom: calc(62px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(62px + var(--safe-bottom));
   margin-top: 12px;
 }
 
@@ -1052,7 +1073,7 @@ textarea {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 10px calc(8px + var(--safe-bottom));
   background: linear-gradient(180deg, rgba(237, 244, 255, 0) 0%, rgba(237, 244, 255, 0.94) 30%, rgba(237, 244, 255, 1) 100%);
 }
 
@@ -1094,7 +1115,7 @@ textarea {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(78px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(78px + var(--safe-bottom));
   transform: translateX(-50%);
   width: min(calc(100% - 24px), 480px);
   border-radius: 16px;

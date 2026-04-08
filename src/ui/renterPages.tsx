@@ -31,7 +31,7 @@ import { ProfileFieldIcon } from './profileIcons'
 export function AuthPage() {
   const state = useTripDriver()
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('123456')
+  const [password, setPassword] = useState('')
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
   const [registerRole, setRegisterRole] = useState<UserRole>(UserRole.renter)
@@ -43,10 +43,7 @@ export function AuthPage() {
           <img alt="TripDriver" src={AppAssets.tripDriverLogo} />
         </div>
         <h1>{state.loginMode ? 'Đăng nhập TripDriver' : 'Tạo tài khoản TripDriver'}</h1>
-        <p className="muted">
-          Ứng dụng thuê xe tự lái với luồng giữ chỗ 1 giờ, duyệt cọc thủ công bởi admin
-          và xác nhận cuối từ chủ xe.
-        </p>
+        <p className="muted">Đăng nhập để đồng hành cùng TripDriver</p>
         {!state.loginMode ? (
           <>
             <input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Họ và tên" />
@@ -79,10 +76,7 @@ export function AuthPage() {
         <button className="secondary-button" onClick={() => state.setLoginMode(!state.loginMode)} type="button">
           {state.loginMode ? 'Chưa có tài khoản?' : 'Đã có tài khoản?'}
         </button>
-        <div className="info-box">
-          Hãy dùng email thật để nhận thư xác minh. Nếu project đang bật xác minh email,
-          bạn cần bấm link trong Gmail trước rồi mới đăng nhập được.
-        </div>
+        <p className="auth-copyright">© 2026 TripDriver</p>
       </div>
     </div>
   )
