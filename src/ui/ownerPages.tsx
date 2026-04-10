@@ -145,30 +145,53 @@ export function OwnerCarsPage() {
       }
       body={
         <div className="page-stack">
-          {cars.map((car) => (
-            <Card key={car.id}>
-              <CarCard car={car} rating={state.averageRatingForCar(car.id)} />
-              <div className="inline-row">
-                <StatusBadge label={state.carStatusLabel(car.status)} color={carStatusColor(car.status)} />
-                {car.status === CarStatus.active || car.status === CarStatus.deactive ? (
-                  <button
-                    className="secondary-button inline-button"
-                    onClick={() =>
-                      void state.toggleCarVisibility(
-                        car.id,
-                        car.status === CarStatus.active ? CarStatus.deactive : CarStatus.active,
-                      )
+          {cars.map((car) => {
+            const reviews = state.reviewsForCar(car.id)
+            const avgRating = state.averageRatingForCar(car.id)
+            return (
+              <Card key={car.id}>
+                <CarCard car={car} rating={avgRating} />
+                <div className="inline-row">
+                  <StatusBadge label={state.carStatusLabel(car.status)} color={carStatusColor(car.status)} />
+                  {car.status === CarStatus.active || car.status === CarStatus.deactive ? (
+                    <button
+                      className="secondary-button inline-button"
+                      onClick={() =>
+                        void state.toggleCarVisibility(
+                          car.id,
+                          car.status === CarStatus.active ? CarStatus.deactive : CarStatus.active,
+                        )
+                      }
+                      type="button"
+                    >
+                      {car.status === CarStatus.active ? 'Ẩn xe' : 'Mở thuê'}
+                    </button>
+                  ) : (
+                    <span className="muted strong-text">Đang bị khóa khi xe giữ chỗ hoặc đang thuê</span>
+                  )}
+                </div>
+                <div className="owner-review-panel">
+                  <KeyValueRow
+                    label="Đánh giá"
+                    value={
+                      reviews.length
+                        ? `${avgRating.toFixed(1)}/5 (${reviews.length} đánh giá)`
+                        : 'Chưa có đánh giá'
                     }
-                    type="button"
-                  >
-                    {car.status === CarStatus.active ? 'Ẩn xe' : 'Mở thuê'}
-                  </button>
-                ) : (
-                  <span className="muted strong-text">Đang bị khóa khi xe giữ chỗ hoặc đang thuê</span>
-                )}
-              </div>
-            </Card>
-          ))}
+                  />
+                  {reviews.slice(0, 2).map((review) => (
+                    <div className="owner-review-item" key={review.id}>
+                      <div className="inline-row">
+                        <strong>{review.customerName}</strong>
+                        <span className="owner-review-score">{review.rating}/5</span>
+                      </div>
+                      <p>{review.comment || 'Người thuê chưa để lại nhận xét chi tiết.'}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )
+          })}
         </div>
       }
     />

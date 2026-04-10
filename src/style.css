@@ -117,6 +117,7 @@ p {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(260%);
   }
@@ -325,7 +326,7 @@ textarea {
   line-height: 1.35;
 }
 
-.key-value-row > span {
+.key-value-row>span {
   flex: 0 0 38%;
   min-width: 0;
 }
@@ -344,7 +345,7 @@ textarea {
   padding: 10px 0;
 }
 
-.revenue-breakdown .key-value-row + .key-value-row {
+.revenue-breakdown .key-value-row+.key-value-row {
   border-top: 1px solid rgba(16, 42, 67, 0.14);
 }
 
@@ -437,13 +438,13 @@ textarea {
   line-height: 1.25;
 }
 
-.car-card-content > strong {
+.car-card-content>strong {
   font-size: 1rem;
   line-height: 1.28;
 }
 
-.car-card-content > .muted,
-.car-card-content > span {
+.car-card-content>.muted,
+.car-card-content>span {
   font-size: 0.92rem;
   line-height: 1.35;
 }
@@ -481,7 +482,7 @@ textarea {
   padding: 3px 0;
 }
 
-.booking-card .key-value-row > span {
+.booking-card .key-value-row>span {
   flex-basis: 34%;
   font-size: 0.88rem;
 }
@@ -686,6 +687,31 @@ textarea {
   font-weight: 700;
 }
 
+.owner-review-panel {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.owner-review-item {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f7faff;
+}
+
+.owner-review-item p {
+  margin: 6px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.owner-review-score {
+  color: #285cff;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
 .detail-empty-state {
   border-radius: 16px;
   padding: 14px;
@@ -815,7 +841,7 @@ textarea {
   gap: 6px;
 }
 
-.field-group > span {
+.field-group>span {
   font-weight: 700;
   color: #102a43;
 }
@@ -1155,12 +1181,14 @@ textarea {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
 }
 
 @media (max-width: 560px) {
+
   .split-row,
   .detail-info-grid {
     grid-template-columns: 1fr;
@@ -1210,11 +1238,11 @@ textarea {
     justify-content: center;
   }
 
-  .key-value-row > span {
+  .key-value-row>span {
     flex-basis: 42%;
   }
 
-  .booking-card .key-value-row > span {
+  .booking-card .key-value-row>span {
     flex-basis: 40%;
   }
 
