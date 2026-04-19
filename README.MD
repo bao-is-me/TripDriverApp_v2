@@ -1,147 +1,101 @@
 # TripDriverApp_v2
 
-TripDriverApp_v2 là ứng dụng thuê xe tự lái đa vai trò, xây dựng bằng **React + TypeScript + Vite**, đóng gói Android bằng **Capacitor**, và kết nối dữ liệu thật qua **Supabase**.
+TripDriverApp_v2 là ứng dụng thuê xe tự lái đa vai trò, được xây dựng bằng **React + TypeScript + Vite**, đóng gói Android bằng **Capacitor**, và kết nối với **Supabase** để xử lý xác thực và dữ liệu.
 
-Ứng dụng mô phỏng và triển khai luồng thuê xe tự lái với 3 vai trò chính:
-
-- **Renter**: người thuê xe
-- **Owner**: chủ xe
-- **Admin**: quản trị nền tảng
+Ứng dụng được thiết kế theo mô hình nền tảng trung gian, trong đó người thuê tạo booking, thanh toán **20% tiền cọc** cho nền tảng, admin kiểm tra thủ công giao dịch cọc, và chủ xe chỉ xác nhận hoặc từ chối đơn sau khi bước duyệt cọc hoàn tất.
 
 ---
 
-## 1. Mục tiêu dự án
+## Tổng quan
 
-Dự án được xây dựng để hỗ trợ quy trình thuê xe tự lái theo mô hình nền tảng trung gian.
+Dự án triển khai luồng thuê xe tự lái với 3 vai trò chính:
 
-Điểm cốt lõi của hệ thống:
+- **Renter** – Người thuê xe
+- **Owner** – Chủ xe
+- **Admin** – Quản trị viên
 
-- Người thuê chọn xe và tạo booking
-- Người thuê thanh toán **tiền cọc 20%** cho nền tảng
-- Admin kiểm tra và duyệt thanh toán cọc
-- Sau khi admin duyệt, chủ xe mới được xác nhận hoặc từ chối booking
-- Khi booking được xác nhận, hai bên tiếp tục nhận xe, trả xe và hoàn tất chuyến đi
-- Sau khi chuyến đi hoàn thành, người thuê có thể đánh giá xe
+Ứng dụng được tổ chức theo hướng mobile-first, có phân tách màn hình theo vai trò và có lớp quản lý state tập trung. Phiên bản hiện tại đã bao gồm các bước chính như tạo booking, thanh toán cọc, duyệt cọc, xác nhận đơn, hoàn tất chuyến đi và đánh giá sau chuyến.
 
 ---
 
-## 2. Công nghệ sử dụng
-
-### Frontend
-- React
-- TypeScript
-- Vite
-
-### Mobile wrapper
-- Capacitor
-- Android (Gradle)
-
-### Backend / Data
-- Supabase
-  - Authentication
-  - Database
-  - Realtime/session support theo phiên đăng nhập
-
----
-
-## 3. Kiến trúc tổng quan
-
-Project được tổ chức theo hướng tách lớp rõ ràng để dễ đọc, dễ bảo trì và dễ mở rộng:
-
-- `src/app`: khởi tạo app, điều hướng page nội bộ
-- `src/domain`: model nghiệp vụ, enum trạng thái
-- `src/data`: repository interface và Supabase repository
-- `src/state`: quản lý state toàn app bằng context
-- `src/ui`: giao diện cho từng vai trò
-- `src/core`: cấu hình asset, payment config, Supabase config
-- `android/`: project Android do Capacitor quản lý
-
----
-
-## 4. Vai trò người dùng
+## Vai trò người dùng
 
 ### Renter
-Người thuê xe có thể:
+Người thuê có thể:
 
-- xem danh sách xe đang mở
+- xem danh sách xe
 - lọc xe theo hãng
 - xem chi tiết xe
 - tạo booking
-- xem hướng dẫn thanh toán tiền cọc
-- xác nhận đã chuyển khoản
+- xem hướng dẫn thanh toán cọc
+- xác nhận đã chuyển khoản tiền cọc
 - theo dõi trạng thái booking
-- xác nhận đã nhận xe
-- xác nhận đã trả xe
-- gửi đánh giá sau khi chuyến đi hoàn tất
-- cập nhật hồ sơ cá nhân
+- xác nhận nhận xe
+- xác nhận trả xe
+- gửi đánh giá sau khi hoàn tất chuyến đi
+- cập nhật thông tin cá nhân
 
 ### Owner
 Chủ xe có thể:
 
-- xem dashboard tổng quan
+- xem dashboard
 - xem danh sách xe của mình
-- thêm xe mới
-- bật / tắt trạng thái hiển thị xe
-- xem booking liên quan đến xe của mình
+- tạo xe mới
+- bật / tắt hiển thị xe
+- xem các booking liên quan đến xe của mình
 - xác nhận hoặc từ chối booking sau khi admin duyệt cọc
-- hoàn tất chuyến đi
-- xem doanh thu, phí nền tảng và phần nhận về
+- hoàn tất chuyến đi sau khi người thuê trả xe
+- xem các giá trị doanh thu như phí nền tảng và phần thu của chủ xe
 
 ### Admin
 Quản trị viên có thể:
 
 - xem dashboard hệ thống
-- xem các booking đang chờ kiểm tra thanh toán cọc
+- kiểm tra các booking đang chờ duyệt cọc
 - duyệt hoặc từ chối thanh toán cọc
 - xem danh sách người dùng
 - xem danh sách xe
-- xem thống kê doanh thu nền tảng
+- xem tổng quan doanh thu từ các booking
 
 ---
 
-## 5. Luồng nghiệp vụ chính
+## Luồng nghiệp vụ chính
 
-### Bước 1: Người thuê tạo booking
-Người thuê chọn xe, nhập thời gian thuê và tạo booking.
+Ứng dụng hiện tại vận hành theo luồng sau:
 
-### Bước 2: Booking chờ đặt cọc
-Hệ thống tạo booking với trạng thái chờ thanh toán cọc.
+1. **Người thuê tạo booking**  
+   Người thuê chọn xe, chọn ngày thuê và tạo booking.
 
-### Bước 3: Người thuê chuyển khoản cọc
-Người thuê xem thông tin chuyển khoản và bấm xác nhận đã thanh toán.
+2. **Booking chuyển sang bước thanh toán cọc**  
+   Đơn thuê bắt đầu ở trạng thái chờ xử lý cọc.
 
-### Bước 4: Admin kiểm tra thanh toán
-Admin xem booking chờ duyệt và quyết định:
+3. **Người thuê chuyển khoản tiền cọc**  
+   Ứng dụng hiển thị thông tin chuyển khoản và mã QR. Sau đó người thuê xác nhận đã thanh toán.
 
-- duyệt cọc
-- hoặc từ chối cọc
+4. **Admin kiểm tra giao dịch cọc thủ công**  
+   Admin có thể duyệt hoặc từ chối khoản cọc đó.
 
-### Bước 5: Owner xác nhận booking
-Nếu admin duyệt cọc, booking chuyển sang bước chờ chủ xe xác nhận.  
-Owner lúc này có thể:
+5. **Owner xác nhận hoặc từ chối booking**  
+   Chỉ sau khi admin duyệt cọc thì booking mới chuyển đến bước chờ chủ xe xác nhận.
 
-- chấp nhận booking
-- hoặc từ chối booking
+6. **Bắt đầu chuyến đi**  
+   Sau khi chủ xe xác nhận, người thuê có thể xác nhận đã nhận xe.
 
-### Bước 6: Bắt đầu chuyến đi
-Sau khi owner xác nhận, booking chuyển sang trạng thái đã xác nhận.  
-Người thuê có thể xác nhận đã nhận xe.
+7. **Kết thúc chuyến đi**  
+   Người thuê xác nhận đã trả xe, sau đó chủ xe hoàn tất chuyến đi.
 
-### Bước 7: Kết thúc chuyến đi
-Người thuê xác nhận đã trả xe, sau đó owner hoàn tất chuyến đi.
-
-### Bước 8: Đánh giá
-Khi booking hoàn tất, người thuê có thể để lại review cho xe.
+8. **Đánh giá sau chuyến đi**  
+   Sau khi hoàn tất, người thuê có thể gửi review.
 
 ---
 
-## 6. Các trạng thái chính trong hệ thống
+## Trạng thái trong hệ thống
 
 ### Trạng thái xe
-- `active`: xe đang mở để thuê
-- `held`: xe đang bị giữ chỗ
-- `rented`: xe đang trong chuyến đi
-- `deactive`: xe đang tắt / không hiển thị
+- `active`
+- `held`
+- `rented`
+- `deactive`
 
 ### Trạng thái booking
 - `pendingDeposit`
@@ -163,8 +117,59 @@ Khi booking hoàn tất, người thuê có thể để lại review cho xe.
 
 ---
 
-## Run Locally
+## Các tính năng đã triển khai
 
-```bash
-npm install
-npm run dev
+Phiên bản hiện tại đã có các chức năng chính sau:
+
+- luồng ứng dụng theo 3 vai trò renter / owner / admin
+- xác thực và khôi phục phiên đăng nhập bằng Supabase
+- quản lý state tập trung bằng React context
+- lớp truy cập dữ liệu theo mô hình repository
+- xem danh sách xe và chi tiết xe
+- tạo booking
+- hiển thị hướng dẫn thanh toán cọc
+- luồng admin duyệt cọc thủ công
+- owner xác nhận / từ chối booking
+- renter xác nhận nhận xe và trả xe
+- owner hoàn tất chuyến đi
+- renter gửi đánh giá
+- cập nhật hồ sơ cá nhân
+- owner tạo xe mới
+- owner bật / tắt hiển thị xe
+- admin xem doanh thu
+- tích hợp Android project qua Capacitor
+
+---
+
+## Công nghệ sử dụng
+
+### Frontend
+- React
+- TypeScript
+- Vite
+
+### Mobile Packaging
+- Capacitor
+- Android (Gradle)
+
+### Backend / Data
+- Supabase
+  - Authentication
+  - Database
+  - session restore
+
+---
+
+## Cấu trúc project
+
+```txt
+src/
+  app/        # khởi tạo ứng dụng và định nghĩa các trang nội bộ
+  core/       # assets, payment config, Supabase config
+  data/       # interface repository và implementation bằng Supabase
+  domain/     # model nghiệp vụ và enum trạng thái
+  state/      # app context và xử lý action theo vai trò
+  ui/         # các màn hình renter, owner, admin và shared UI
+
+android/      # project Android của Capacitor
+supabase/     # SQL migration và script hotfix
